@@ -17,11 +17,17 @@ history_messages = [
     {"role": "system", "content": "You are a helpful assistant."}
 ]
 
-#globaL MESSAGE
 conversation_history = ""
 
 #google drive api
 os.environ["GOOGLE_APPLICATION_CREDENTIALS"] = "cre2.json"
+
+def is_bucket_empty(bucket_name):
+    client = storage.Client()
+    bucket = client.get_bucket(bucket_name)
+    blobs = list(bucket.list_blobs())
+    print("bucket is empty")
+    return len(blobs) == 0
 
 
 def process_data(file_path):
@@ -117,6 +123,9 @@ if __name__ == "__main__":
     try:
         while True:
             source_blob_name = f"temp_data{count}.txt"
+
+            if is_bucket_empty(bucket_name): count = 0
+                
             new_count = download_blob_server(bucket_name, source_blob_name, destination_file_name, count)
             if count == new_count:
                 print("wait for response")
@@ -128,5 +137,3 @@ if __name__ == "__main__":
         # store as a file
         with open("conversation.txt", "w") as file:
             file.write(conversation_history)
-
-    
