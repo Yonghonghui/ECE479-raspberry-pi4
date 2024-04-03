@@ -4,6 +4,14 @@ import os
 # api
 os.environ["GOOGLE_APPLICATION_CREDENTIALS"] = "cre2.json"
 
+# clean the bucket prepare for the next call
+def delete_all_blob(bucket_name):
+    client = storage.Client()
+    bucket = client.get_bucket(bucket_name)
+    blobs = bucket.list_blobs()
+    for blob in blobs:
+        blob.delete()
+
 
 def download_blob_client(bucket_name, source_blob_name, destination_file_name, count):
     """Downloads a blob from the bucket if it exists."""
@@ -76,6 +84,8 @@ if __name__ == "__main__":
                 break
             print("Waiting for response")
 
+    # clean the bucket after enter quit
+    delete_all_blob(bucket_name)
 
 
     
