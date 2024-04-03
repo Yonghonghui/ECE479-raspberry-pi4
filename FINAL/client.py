@@ -1,5 +1,6 @@
 from google.cloud import storage
 import os
+from speech_to_text import transcribe_audio
 
 # api
 os.environ["GOOGLE_APPLICATION_CREDENTIALS"] = "cre2.json"
@@ -24,14 +25,15 @@ def download_blob_client(bucket_name, source_blob_name, destination_file_name, c
     # exist
     blob = bucket.blob(source_blob_name)
     if not blob.exists():
-        print(f"Blob {source_blob_name} does not exist in {bucket_name}.")
+        #print(f"Blob {source_blob_name} does not exist in {bucket_name}.")
         return count
 
     # download file
     else:
         blob.download_to_filename(destination_file_name)
 
-        print(f"Blob {source_blob_name} downloaded to {destination_file_name}.")
+        #print(f"Blob {source_blob_name} downloaded to {destination_file_name}.")
+        print("receive response")
         return count + 1
 
 
@@ -51,8 +53,8 @@ def upload_blob_client(bucket_name, source_file_name, destination_blob_name,coun
     # construct blob
     blob = bucket.blob(destination_blob_name)
     blob.upload_from_filename(source_file_name)
-
-    print(f"File {source_file_name} uploaded to {destination_blob_name} in {bucket_name}.")
+    
+    #print(f"File {source_file_name} uploaded to {destination_blob_name} in {bucket_name}.")
 
 
 
@@ -64,25 +66,34 @@ if __name__ == "__main__":
     
     while True:
         # receive data
-        data = input("Enter data: ")
-        if(data == "quit"):
+        try:
+
+            data = transcribe_audio()
+            # if(data == "quit"):
+            #     break
+
+            if data is None: continue
+            
+            # write data
+            with open("temp_data.txt", "w") as f:
+                f.write(data)
+            
+            # upload to drive
+            upload_blob_client(bucket_name, "temp_data.txt", f"temp_data{count}.txt",count)
+
+            while True:
+                source_blob_name = f"process_data{count}.txt"  #
+                new_count = download_blob_client(bucket_name, source_blob_name, destination_file_name, count)
+
+                if(new_count == count+1):
+                    count = new_count 
+                    break
+                print("Waiting for response")
+
+        except KeyboardInterrupt:
+            print("KeyboardInterrupt detected. Exiting...")
             break
-        
-        # write data
-        with open("temp_data.txt", "w") as f:
-            f.write(data)
-        
-        # upload to drive
-        upload_blob_client(bucket_name, "temp_data.txt", f"temp_data{count}.txt",count)
 
-        while True:
-            source_blob_name = f"process_data{count}.txt"  #
-            new_count = download_blob_client(bucket_name, source_blob_name, destination_file_name, count)
-
-            if(new_count == count+1):
-                count = new_count 
-                break
-            print("Waiting for response")
 
     # clean the bucket after enter quit
     delete_all_blob(bucket_name)
