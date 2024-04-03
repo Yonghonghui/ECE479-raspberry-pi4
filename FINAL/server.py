@@ -1,7 +1,26 @@
 from google.cloud import storage
 import os
 
+from request_gpt import call_openai_api
 
+import json
+from openai import OpenAI
+
+# read key from txt
+with open("key.txt", "r") as key_file:
+    api_key = key_file.read().strip()
+
+client = OpenAI(api_key=api_key)
+
+# global messages
+history_messages = [
+    {"role": "system", "content": "You are a helpful assistant."}
+]
+
+#globaL MESSAGE
+conversation_history = ""
+
+#google drive api
 os.environ["GOOGLE_APPLICATION_CREDENTIALS"] = "cre2.json"
 
 
@@ -13,11 +32,11 @@ def process_data(file_path):
             text = file.read()
         
         # Convert the text to uppercase
-        uppercase_text = text.upper()
+        answer = process_data_with_gpt(text)
         
         # Write the uppercase text to a new file
         with open("processed_data.txt", "w") as processed_file:
-            processed_file.write(uppercase_text)
+            processed_file.write(answer)
         
         print("Text processed and saved to processed_data.txt")
         
@@ -27,6 +46,15 @@ def process_data(file_path):
         print("An error occurred:", e)
 
 
+def process_data_with_gpt(new_question):
+    global conversation_history
+    conversation_history += f"User: {new_question}\n"
+    response = call_openai_api(new_question)
+    answer = response.choices[0].message.content
+    #print(response.choices[0].message.content)
+    conversation_history += f"AI: {answer}\n"
+
+    return answer
 
 
 def upload_blob_server(bucket_name, source_file_name, destination_blob_name,count):
@@ -86,13 +114,19 @@ if __name__ == "__main__":
     bucket_name = "haoyuh3"
     destination_file_name = "destination_file.txt"  #
     process_datafile = "processed_data.txt"
-    while True:
-        source_blob_name = f"temp_data{count}.txt"  # 
-        new_count = download_blob_server(bucket_name, source_blob_name, destination_file_name, count)
-        if(count == new_count):
-            print("wait for response")
+    try:
+        while True:
+            source_blob_name = f"temp_data{count}.txt"
+            new_count = download_blob_server(bucket_name, source_blob_name, destination_file_name, count)
+            if count == new_count:
+                print("wait for response")
+            else:
+                print("make response")
+            count = new_count
+    except KeyboardInterrupt:
+        print("\nExiting loop...")
+        # store as a file
+        with open("conversation.txt", "w") as file:
+            file.write(conversation_history)
 
-        else: print("make response")
-
-        count = new_count
-
+    
