@@ -2,6 +2,8 @@ from google.cloud import storage
 import os
 from speech_to_text import transcribe_audio
 
+## change folder name to module 
+from module.facial_req import face_detection
 # api
 os.environ["GOOGLE_APPLICATION_CREDENTIALS"] = "cre2.json"
 
@@ -63,7 +65,7 @@ if __name__ == "__main__":
     bucket_name = "haoyuh3"
     destination_file_name = "process_file.txt"  #
     count = 0  # counter
-    
+    face_detection()
     while True:
         # receive data
         try:
