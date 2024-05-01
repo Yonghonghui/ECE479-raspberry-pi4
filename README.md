@@ -1,4 +1,9 @@
 # raspberry-pi4
+final demo: smart assistant based on chat-gpt on pi4
+
+
+https://github.com/haoyuh3/raspberry-pi4/assets/148392769/0036d5a8-acd3-4428-bbf9-b62fb8b40f42
+
 
 you can config your raspberry pi according to lab2
 
