@@ -27,7 +27,9 @@ sudo apt-get install python-pyaudio python3-pyaudio
 sudo apt-get install flac
 
 numpy down grade!!!!!!!!!!
-Uninstall 后再install 解决
+Uninstall numpy
+
+
 
 Raspberry pi上似乎不用dlib 
 Install face_recognition
