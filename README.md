@@ -26,16 +26,25 @@ And check the installation of Keras through
 from tensorflow import keras
 
 ##face recognition/ text-speech/ speech-text/ google cloud/ openai
+
 pip install gtts
+
 pip install pygame
+
 pip install openai
+
 pip install google-cloud-storage
+
 pip install SpeechRecognition
+
 pip install pyaudio
+
 sudo apt-get install python-pyaudio python3-pyaudio
+
 sudo apt-get install flac
 
 numpy down grade!!!!!!!!!!
+
 Uninstall numpy
 
 Install face_recognition
