@@ -45,6 +45,10 @@ sudo apt-get install flac
 
 numpy down grade!!!!!!!!!!
 
+
+reference:
+https://github.com/ageitgey/face_recognition
+
 Uninstall numpy
 
 Install face_recognition
