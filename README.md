@@ -29,9 +29,5 @@ sudo apt-get install flac
 numpy down grade!!!!!!!!!!
 Uninstall numpy
 
-
-
-Raspberry pi上似乎不用dlib 
 Install face_recognition
 
-相机配置
