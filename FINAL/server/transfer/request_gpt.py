@@ -1,31 +1,14 @@
 
-
-# from openai import OpenAI
-# api_key = "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"
-# client = OpenAI(api_key=api_key)
-
-# response = client.chat.completions.create(
-#   model="gpt-3.5-turbo",
-#   max_tokens = 100,
-#   messages=[
-#     {"role": "system", "content": "You are a helpful assistant."},
-#     {"role": "user", "content": "explain cpu"},
-    
-#   ]
-# )
-# print(response.choices[0].message.content)
-
-
 import json
 from openai import OpenAI
 
-# 从 key.txt 文件中读取密钥
+##read key
 with open("key.txt", "r") as key_file:
     api_key = key_file.read().strip()
 
 client = OpenAI(api_key=api_key)
 
-# 全局变量，用于存储历史消息
+##store history message
 history_messages = [
     {"role": "system", "content": "You are a helpful assistant."}
 ]
