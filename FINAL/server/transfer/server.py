@@ -2,6 +2,7 @@ from google.cloud import storage
 import os
 from audio_recognition_server import audio_recognition_server
 from request_gpt import call_openai_api
+from Image_request_gpt import call_openai_image_api
 import argparse
 import json
 from openai import OpenAI
@@ -14,7 +15,7 @@ client = OpenAI(api_key=api_key)
 
 # global messages
 history_messages = [
-    {"role": "system", "content": "You are a helpful assistant."}
+    {"role": "system", "content": "You are a helpful assistant and you can analyze both images and texts"}
 ]
 
 conversation_history = ""
@@ -61,9 +62,26 @@ def process_data(file_path):
 def process_data_with_gpt(new_question):
     global conversation_history
     conversation_history += f"User: {new_question}\n"
-    response = call_openai_api(new_question)
-    answer = response.choices[0].message.content
-    #print(response.choices[0].message.content)
+    if (new_question[0]=="/"):
+        response = call_openai_image_api(new_question)
+        print("call gpt4")
+        # Check if request was successful
+        if response.status_code == 200:
+            # Parse JSON response into a Python dictionary
+            data = response.json()
+
+            # Access the content text from the response
+            if 'choices' in data and len(data['choices']) > 0:
+                answer = data['choices'][0]['message']['content']
+                print("Generated content:")
+                print(answer)
+            else:
+                print("No valid content found in the response.")
+        else:
+            print(f"Error: API request failed with status code {response.status_code}")
+    else: 
+        response = call_openai_api(new_question)
+        answer = response.choices[0].message.content
     conversation_history += f"AI: {answer}\n"
 
     return answer

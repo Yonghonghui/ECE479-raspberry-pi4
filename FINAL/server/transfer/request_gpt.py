@@ -10,7 +10,7 @@ client = OpenAI(api_key=api_key)
 
 ##store history message
 history_messages = [
-    {"role": "system", "content": "You are a helpful assistant."}
+    {"role": "system", "content": "You are a helpful assistant and you can analyze both images and texts"}
 ]
 
 
