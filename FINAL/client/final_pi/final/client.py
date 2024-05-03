@@ -9,6 +9,9 @@ import pyaudio
 import wave
 import numpy as np
 import sys
+import time
+import picamera
+import base64
 #api
 os.environ["GOOGLE_APPLICATION_CREDENTIALS"] = "cre2.json"
 
@@ -201,6 +204,21 @@ def upload_blob_client(bucket_name, source_file_name, destination_blob_name,coun
     #print(f"File {source_file_name} uploaded to {destination_blob_name} in {bucket_name}.")
 
 
+def encode_image(filename):
+    print("reach here")
+    with open (filename,"rb") as img_file:
+        return base64.b64encode(img_file.read()).decode("utf-8")
+
+def capture_and_save_image(filename):
+    with picamera.PiCamera() as camera:
+        time.sleep(3)
+        camera.capture(filename)
+    
+    base64_image =encode_image(filename)
+    print("after encoding")
+    with open("/home/haoyuh3/final_pi_new/final/test_data.txt", "w") as f:
+        f.write(base64_image)   
+    print("write success")
 
 def main(audio = False):
     # bucket name
@@ -235,9 +253,16 @@ def main(audio = False):
             # write data
             with open("temp_data.txt", "w") as f:
                 f.write(data)
+            if "look" in data.lower():
+                filename="/home/haoyuh3/final_pi_new/final/captured_img.jpg"
+                capture_and_save_image(filename)
+                print("Picture Taken!")
+                upload_blob_client(bucket_name, "test_data.txt", f"temp_data{count}.txt",count)
             
             # upload to drive
-            upload_blob_client(bucket_name, "temp_data.txt", f"temp_data{count}.txt",count)
+            else:
+                print("No picture taken")
+                upload_blob_client(bucket_name, "temp_data.txt", f"temp_data{count}.txt",count)
 
             while True:
                 source_blob_name = f"process_data{count}.txt"  #
