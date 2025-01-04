@@ -1,3 +1,7 @@
+Contributors:
+Haoyu Huang / 
+Yanghonghui Chen
+
 # raspberry-pi4
 final demo: smart assistant based on chat-gpt on pi4
 
